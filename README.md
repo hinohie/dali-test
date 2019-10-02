@@ -16,8 +16,9 @@
 ### Requirements
 
  - Ubuntu 16.04 or later
- - Environment created using dali_env script in dali-core repository
  - GCC version 6
+ - Environment created using dali_env script in dali-core repository
+ - This environment should have the DALi libraries installed
 
 DALi requires a compiler supporting C++11 features.
 Ubuntu 16.04 is the first version to offer this by default (GCC v5.4.0).
