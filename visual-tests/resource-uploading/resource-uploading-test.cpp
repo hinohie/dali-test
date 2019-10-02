@@ -24,7 +24,7 @@
 #include <dali-toolkit/devel-api/visual-factory/visual-factory.h>
 
 // INTERNAL INCLUDES
-#include "visual-test-utils.h"
+#include "visual-test.h"
 
 using namespace Dali;
 
@@ -44,8 +44,6 @@ const std::string SECOND_IMAGE_FILE = TEST_IMAGE_DIR "resource-uploading/expecte
 
 const unsigned int NUMBER_OF_IMAGES = 2;
 
-const Rect<uint16_t> IMAGE_AREA(20u, 115u, 440u, 565u);
-
 enum TestStep
 {
   IMAGE_CHANGE,
@@ -58,7 +56,12 @@ static int gTestStep = -1;
 
 }  // namespace
 
-class ResourceUploadingTest: public VisualTestUtils
+/**
+ * @brief This is to test the functionality which allows the uploading of textures to the GPU
+ * without rendering while the application is paused, and thus, have them available immediately
+ * for rendering on resume.
+ */
+class ResourceUploadingTest: public VisualTest
 {
  public:
 
@@ -189,14 +192,14 @@ private:
   {
     if ( gTestStep == ADAPTOR_RESUME )
     {
-      DALI_ASSERT_DEBUG( CheckImage( SECOND_IMAGE_FILE, IMAGE_AREA ) );
+      DALI_ASSERT_ALWAYS( CheckImage( SECOND_IMAGE_FILE ) );
 
       // The last check has been done, so we can quit the test
       mApplication.Quit();
     }
     else
     {
-      DALI_ASSERT_DEBUG( CheckImage( FIRST_IMAGE_FILE ) );
+      DALI_ASSERT_ALWAYS( CheckImage( FIRST_IMAGE_FILE ) );
     }
   }
 

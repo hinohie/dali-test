@@ -1,5 +1,5 @@
-#ifndef VISUAL_TEST_UTILS_H
-#define VISUAL_TEST_UTILS_H
+#ifndef VISUAL_TEST_H
+#define VISUAL_TEST_H
 
 /*
  * Copyright (c) 2019 Samsung Electronics Co., Ltd.
@@ -24,10 +24,18 @@
 #include <dali/devel-api/adaptor-framework/window-devel.h>
 #include <dali/devel-api/adaptor-framework/image-loading.h>
 
-#define DALI_VISUAL_TEST( VisualTestName, InitFunction ) \
+/**
+ * DALI_VISUAL_TEST_WITH_WINDOW_SIZE is a wrapper for the boilerplate code to create
+ * the main function of the visual test application with the given main window size.
+ * @param[in] VisualTestName The class name of the visual test
+ * @param[in] InitFunction The name of the callback function to connect with the application's InitSignal
+ * @param[in] WindowWidth The width of the application's main window
+ * @param[in] WindowHeight The height of the application's main window
+ */
+#define DALI_VISUAL_TEST_WITH_WINDOW_SIZE( VisualTestName, InitFunction, WindowWidth, WindowHeight ) \
   int DALI_EXPORT_API main( int argc, char **argv ) \
   { \
-    Application application = Application::New( &argc, &argv, "" ); \
+    Application application = Application::New( &argc, &argv, "", Application::OPAQUE, Dali::Rect<int>(0, 0, WindowWidth, WindowHeight) ); \
     VisualTestName test( application ); \
     application.InitSignal().Connect( &test, &VisualTestName::InitFunction ); \
     application.MainLoop(); \
@@ -35,24 +43,32 @@
   }
 
 /**
- * @brief This class provides the functionality of visual testing by capturing the content
- *        rendered by GPU in the given window and compare it with a given image.
+ * DALI_VISUAL_TEST is a wrapper for the boilerplate code to create the main function
+ * of the visual test application with the default main window size (i.e. 480 x 800).
+ * @param[in] VisualTestName The class name of the visual test
+ * @param[in] InitFunction The name of the callback function to connect with the application's InitSignal
  */
-class VisualTestUtils : public Dali::ConnectionTracker
+#define DALI_VISUAL_TEST( VisualTestName, InitFunction ) DALI_VISUAL_TEST_WITH_WINDOW_SIZE( VisualTestName, InitFunction, 480, 800 )
+
+/**
+ * @brief This class provides the functionality of visual test by capturing the content
+ *        rendered by the GPU in the given window and compare it with a given image.
+ */
+class VisualTest : public Dali::ConnectionTracker
 {
 public:
 
   /**
    * @brief Constructor.
    */
-  VisualTestUtils();
+  VisualTest();
 
 protected:
 
   /**
    * @brief Default Destructor.
    */
-  virtual ~VisualTestUtils() = default;
+  virtual ~VisualTest() = default;
 
   /**
    * @brief Capture the content of the given window rendered by GPU
@@ -117,4 +133,4 @@ private:
   Dali::WeakHandle< Dali::Layer > mWindow;                    ///< The weak handle of the window to be rendered
 };
 
-#endif // VISUAL_TEST_UTILS_H
+#endif // VISUAL_TEST_H

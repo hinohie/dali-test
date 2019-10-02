@@ -28,16 +28,15 @@ e.g. it avoids spurious 'defined but not used' warnings in header files.
 
 ### Building the Repository
 
-To build the repository enter the 'build/tizen' folder:
+To build the repository:
 
-         $ cd dali-test/build/tizen
-
-Then run the following commands:
-
-         $ cmake -DCMAKE_INSTALL_PREFIX=$DESKTOP_PREFIX .
-         $ make install -j8
+         $ ./build.sh
 
 ### DEBUG Builds
+
+Enter the 'build/tizen' folder
+
+         $ cd build/tizen
 
 Specify a debug build when building for desktop by passing the following parameter to cmake:
 

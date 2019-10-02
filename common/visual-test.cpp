@@ -16,7 +16,7 @@
  */
 
 // INTERNAL INCLUDES
-#include "visual-test-utils.h"
+#include "visual-test.h"
 
 using namespace Dali;
 
@@ -30,13 +30,13 @@ const std::string TEMP_FILENAME = "/tmp/temp.png";
 /**
  * @brief Constructor.
  */
-VisualTestUtils::VisualTestUtils()
+VisualTest::VisualTest()
 : mNativeImageSourcePtr( nullptr ),
   mWindow()
 {
 }
 
-void VisualTestUtils::SetupNativeImage( Dali::Window window )
+void VisualTest::SetupNativeImage( Dali::Window window )
 {
   if( !mOffscreenRenderTask || window.GetRootLayer() != mWindow.GetHandle() )
   {
@@ -71,21 +71,21 @@ void VisualTestUtils::SetupNativeImage( Dali::Window window )
   mOffscreenRenderTask.SetRefreshRate( RenderTask::REFRESH_ONCE );
 }
 
-void VisualTestUtils::CaptureWindow( Dali::Window window )
+void VisualTest::CaptureWindow( Dali::Window window )
 {
   SetupNativeImage( window );
 
-  mOffscreenRenderTask.FinishedSignal().Connect( this, &VisualTestUtils::OnOffscreenRenderFinished );
+  mOffscreenRenderTask.FinishedSignal().Connect( this, &VisualTest::OnOffscreenRenderFinished );
 }
 
-void VisualTestUtils::OnOffscreenRenderFinished( RenderTask& task )
+void VisualTest::OnOffscreenRenderFinished( RenderTask& task )
 {
-  task.FinishedSignal().Disconnect( this, &VisualTestUtils::OnOffscreenRenderFinished );
+  task.FinishedSignal().Disconnect( this, &VisualTest::OnOffscreenRenderFinished );
 
   PostRender();
 }
 
-bool VisualTestUtils::CheckImage( const std::string fileName, const Rect<uint16_t>& areaToCompare )
+bool VisualTest::CheckImage( const std::string fileName, const Rect<uint16_t>& areaToCompare )
 {
   bool success = false;
 
@@ -119,7 +119,7 @@ bool VisualTestUtils::CheckImage( const std::string fileName, const Rect<uint16_
   return success;
 }
 
-bool VisualTestUtils::CompareImageFile( const std::string fileName1, const std::string fileName2, const Rect<uint16_t>& areaToCompare )
+bool VisualTest::CompareImageFile( const std::string fileName1, const std::string fileName2, const Rect<uint16_t>& areaToCompare )
 {
   Devel::PixelBuffer pixelBuffer1 = Dali::LoadImageFromFile( fileName1 );
   Devel::PixelBuffer pixelBuffer2 = Dali::LoadImageFromFile( fileName2 );
@@ -151,7 +151,7 @@ bool VisualTestUtils::CompareImageFile( const std::string fileName1, const std::
   return true;
 }
 
-bool VisualTestUtils::CompareImageFile( const std::string fileName, std::vector< unsigned char > imageBuffer, unsigned int imageWidth, unsigned int imageHeight )
+bool VisualTest::CompareImageFile( const std::string fileName, std::vector< unsigned char > imageBuffer, unsigned int imageWidth, unsigned int imageHeight )
 {
   Devel::PixelBuffer pixelBuffer = Dali::LoadImageFromFile( fileName );
 
