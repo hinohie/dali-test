@@ -6,7 +6,6 @@
       * [Building for Ubuntu desktop](#1-building-for-ubuntu-desktop)
          * [Minimum Requirements](#minimum-requirements)
          * [Building the Repository](#building-the-repository)
-         * [DEBUG Builds](#debug-builds)
    * [Running the tests](#running-the-tests)
    * [Creating a visual test](#creating-a-visual-test)
 
@@ -16,7 +15,7 @@
 
 ### Requirements
 
- - Ubuntu 14.04 or later
+ - Ubuntu 16.04 or later
  - Environment created using dali_env script in dali-core repository
  - GCC version 6
 
@@ -32,26 +31,16 @@ To build the repository:
 
          $ ./build.sh
 
-### DEBUG Builds
+For debug builds:
 
-Enter the 'build/tizen' folder
-
-         $ cd build/tizen
-
-Specify a debug build when building for desktop by passing the following parameter to cmake:
-
-         $ cmake -DCMAKE_INSTALL_PREFIX=$DESKTOP_PREFIX -DCMAKE_BUILD_TYPE=Debug .
-
-Before running make install as normal:
-
-         $ make install -j8
+         $ ./build.sh --debug
 
 # Running the tests
 
 To run all the tests:
 
          $ ./execute.sh
-         
+
 # Creating a visual test
 
  - Make a directory in the "visual-tests" directory. Only one visual test will be created per directory.
