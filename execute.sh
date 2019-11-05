@@ -52,7 +52,7 @@ Clear='\e[0m'
 
 # Retrieve all the installed tests
 tests=$( ls -d $DESKTOP_PREFIX/bin/*.test )
-num_tests=${#tests[@]}
+num_tests=$(echo $tests | wc -w)
 num_passes=0
 num_fails=0
 
