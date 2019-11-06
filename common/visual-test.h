@@ -20,6 +20,7 @@
 
 // EXTERNAL INCLUDES
 #include <string>
+#include <cstdlib>
 #include <dali/dali.h>
 #include <dali/devel-api/adaptor-framework/window-devel.h>
 #include <dali/devel-api/adaptor-framework/image-loading.h>
@@ -31,10 +32,13 @@
  * @param[in] InitFunction The name of the callback function to connect with the application's InitSignal
  * @param[in] WindowWidth The width of the application's main window
  * @param[in] WindowHeight The height of the application's main window
+ * @note This sets the DPI to be 96 for all tests so that text tests all produce the same output image
  */
 #define DALI_VISUAL_TEST_WITH_WINDOW_SIZE( VisualTestName, InitFunction, WindowWidth, WindowHeight ) \
   int DALI_EXPORT_API main( int argc, char **argv ) \
   { \
+    setenv( "DALI_DPI_HORIZONTAL", "96", true ); \
+    setenv( "DALI_DPI_VERTICAL", "96", true ); \
     Application application = Application::New( &argc, &argv, "", Application::OPAQUE, Dali::Rect<int>(0, 0, WindowWidth, WindowHeight) ); \
     VisualTestName test( application ); \
     application.InitSignal().Connect( &test, &VisualTestName::InitFunction ); \
