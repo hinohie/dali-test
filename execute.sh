@@ -51,16 +51,17 @@ Red='\e[0;31m'
 Clear='\e[0m'
 
 # Retrieve all the installed tests
-tests=$( ls -d $DESKTOP_PREFIX/bin/*.test )
+scriptLocation=$(dirname ${BASH_SOURCE[0]})
+tests=$(ls $scriptLocation/visual-tests)
 num_tests=$(echo $tests | wc -w)
 num_passes=0
 num_fails=0
 
 # Execute each test executable in turn
 for i in $tests ; do
-  test=$(basename $i)
+  test=$(basename $i).test
   echo -e "${Bold}Executing: $test${Clear}"
-  command="$i ${REDIRECT_OUTPUT}"
+  command="$test ${REDIRECT_OUTPUT}"
   eval $command
 
   # Check the test result
