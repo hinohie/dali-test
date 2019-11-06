@@ -89,8 +89,6 @@ bool VisualTest::CheckImage( const std::string fileName, const Rect<uint16_t>& a
 {
   bool success = false;
 
-//  mNativeImageSourcePtr->EncodeToFile( TEMP_FILENAME );
-
   if ( areaToCompare == Rect<uint16_t>(0u, 0u, 0u, 0u) )
   {
     std::vector< unsigned char > pixbuf;
