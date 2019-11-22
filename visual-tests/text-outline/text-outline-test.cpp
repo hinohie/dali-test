@@ -92,7 +92,6 @@ private:
       case ENGLISH_OUTLINE:
       {
         EnglishOutlineTest();
-        PerformNextTest();
         break;
       }
       case MULTI_LANGUAGE_OUTLINE:
@@ -169,6 +168,7 @@ private:
     if ( gTestStep == ENGLISH_OUTLINE )
     {
       DALI_ASSERT_ALWAYS( CheckImage( IMAGE_FILE_1 ) );
+      PerformNextTest();
     }
     else if ( gTestStep == MULTI_LANGUAGE_OUTLINE )
     {
