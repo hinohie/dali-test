@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Samsung Electronics Co., Ltd.
+ * Copyright (c) 2020 Samsung Electronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 
 // INTERNAL INCLUDES
 #include "visual-test.h"
+#include "image-util.h"
 
 using namespace Dali;
 
@@ -85,96 +86,49 @@ void VisualTest::OnOffscreenRenderFinished( RenderTask& task )
   PostRender();
 }
 
-bool VisualTest::CheckImage( const std::string fileName, const Rect<uint16_t>& areaToCompare )
+bool VisualTest::CheckImage( const std::string fileName, const float similarityThreshold, const Rect<uint16_t>& areaToCompare )
 {
   bool success = false;
 
-  if ( areaToCompare == Rect<uint16_t>(0u, 0u, 0u, 0u) )
+  // Compare the image in the given area
+  if ( mNativeImageSourcePtr->EncodeToFile( TEMP_FILENAME ) )
   {
-    std::vector< unsigned char > pixbuf;
-    unsigned int width(0), height(0);
-    Pixel::Format pixelFormat;
-
-    // Compare the image in the whole area
-    if ( mNativeImageSourcePtr->GetPixels( pixbuf, width, height, pixelFormat ) )
+    if ( CompareImageFile( fileName, TEMP_FILENAME, similarityThreshold, areaToCompare ) )
     {
-      if ( CompareImageFile( fileName, pixbuf, width, height ) )
-      {
-        success = true;
-      }
-    }
-  }
-  else
-  {
-    // Compare the image in the given area
-    if ( mNativeImageSourcePtr->EncodeToFile( TEMP_FILENAME ) )
-    {
-      if ( CompareImageFile( fileName, TEMP_FILENAME, areaToCompare ) )
-      {
-        success = true;
-      }
+      success = true;
     }
   }
 
   return success;
 }
 
-bool VisualTest::CompareImageFile( const std::string fileName1, const std::string fileName2, const Rect<uint16_t>& areaToCompare )
+bool VisualTest::CompareImageFile( const std::string fileName1, const std::string fileName2, const float similarityThreshold, const Rect<uint16_t>& areaToCompare )
 {
-  Devel::PixelBuffer pixelBuffer1 = Dali::LoadImageFromFile( fileName1 );
-  Devel::PixelBuffer pixelBuffer2 = Dali::LoadImageFromFile( fileName2 );
+  cv::Scalar similarity;
 
-  if ( pixelBuffer1.GetWidth() != pixelBuffer2.GetWidth() || pixelBuffer1.GetHeight() != pixelBuffer2.GetHeight() )
+  // Load the images
+  cv::Mat matrixImg1 = cv::imread(fileName1, CV_LOAD_IMAGE_UNCHANGED);
+  cv::Mat matrixImg2 = cv::imread(fileName2, CV_LOAD_IMAGE_UNCHANGED);
+
+  if ( areaToCompare != Rect<uint16_t>( 0u, 0u, 0u, 0u ) )
   {
-    return false;
+    // Crop the images
+    cv::Rect roi;
+    roi.x = areaToCompare.x;
+    roi.y = areaToCompare.y;
+    roi.width = areaToCompare.width;
+    roi.height = areaToCompare.height;
+
+    cv::Mat croppedMatrixImg1 = matrixImg1(roi);
+    cv::Mat croppedMatrixImg2 = matrixImg2(roi);
+
+    similarity = ImageUtil::CalculateSSIM( croppedMatrixImg1, croppedMatrixImg2 );
+  }
+  else
+  {
+    similarity = ImageUtil::CalculateSSIM( matrixImg1, matrixImg2 );
   }
 
-  pixelBuffer1.Crop( areaToCompare.x, areaToCompare.y, areaToCompare.width,areaToCompare.height );
-  pixelBuffer2.Crop( areaToCompare.x, areaToCompare.y, areaToCompare.width,areaToCompare.height );
-
-  // Check the bytes per pixel.
-  const Pixel::Format pixelFormat = pixelBuffer1.GetPixelFormat();
-  const unsigned int pixelSize = Pixel::GetBytesPerPixel( pixelFormat );
-  const unsigned int bufferSize = pixelBuffer1.GetWidth() * pixelBuffer1.GetHeight() * pixelSize;
-
-  // Compare the two buffers.
-  unsigned char* pBitmapData1 = pixelBuffer1.GetBuffer();
-  unsigned char* pBitmapData2 = pixelBuffer2.GetBuffer();
-  for ( unsigned int i = 0; i < bufferSize; ++i, ++pBitmapData1, ++pBitmapData2 )
-  {
-    if ( *pBitmapData1 != *pBitmapData2 )
-    {
-      return false;
-    }
-  }
-
-  return true;
+  // Check whether SSIM for all the three channels (RGB) are above the threshold
+  return ( similarity.val[0] >= similarityThreshold && similarity.val[1] >= similarityThreshold && similarity.val[2] >= similarityThreshold );
 }
-
-bool VisualTest::CompareImageFile( const std::string fileName, std::vector< unsigned char > imageBuffer, unsigned int imageWidth, unsigned int imageHeight )
-{
-  Devel::PixelBuffer pixelBuffer = Dali::LoadImageFromFile( fileName );
-
-  if ( pixelBuffer.GetWidth() != imageWidth || pixelBuffer.GetHeight() != imageHeight )
-  {
-    return false;
-  }
-
-  // Check the bytes per pixel.
-  const Pixel::Format pixelFormat = pixelBuffer.GetPixelFormat();
-  const unsigned int pixelSize = Pixel::GetBytesPerPixel( pixelFormat );
-  const unsigned int bufferSize = pixelBuffer.GetWidth() * pixelBuffer.GetHeight() * pixelSize;
-
-  // Compare the two buffers.
-  unsigned char* pBitmapData = pixelBuffer.GetBuffer();
-  for ( unsigned int i = 0; i < bufferSize; ++i, ++pBitmapData )
-  {
-    if ( *pBitmapData != imageBuffer[i] )
-    {
-      return false;
-    }
-  }
-
-  return true;
-}
-

@@ -17,6 +17,7 @@
 
  - Ubuntu 16.04 or later
  - GCC version 6
+ - OpenCV version 2.4.9 or above
  - Environment created using dali_env script in dali-core repository
  - This environment should have the DALi libraries installed
 
@@ -25,6 +26,8 @@ Ubuntu 16.04 is the first version to offer this by default (GCC v5.4.0).
 
 GCC version 6 is recommended since it has fixes for issues in version 5
 e.g. it avoids spurious 'defined but not used' warnings in header files.
+
+OpenCV version 2.4.9 is the default version installed in Ubuntu 16.04
 
 ### Building the Repository
 

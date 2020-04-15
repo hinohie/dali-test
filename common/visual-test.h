@@ -2,7 +2,7 @@
 #define VISUAL_TEST_H
 
 /*
- * Copyright (c) 2019 Samsung Electronics Co., Ltd.
+ * Copyright (c) 2020 Samsung Electronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,9 @@
  */
 #define DALI_VISUAL_TEST( VisualTestName, InitFunction ) DALI_VISUAL_TEST_WITH_WINDOW_SIZE( VisualTestName, InitFunction, 480, 800 )
 
+// The default threshold for image similarity
+#define DEFAULT_IMAGE_SIMILARITY_THRESHOLD 1.0f
+
 /**
  * @brief This class provides the functionality of visual test by capturing the content
  *        rendered by the GPU in the given window and compare it with a given image.
@@ -83,9 +86,11 @@ protected:
   /**
    * @brief Compare the result of the window capture with the given image file
    * @param[in] fileName The image file to be compared with
+   * @param[in] similarityThreshold The threshold for similarity comparison (The default value is 1 which means all the pixels in the two images must be identical)
    * @param[in] areaToCompare The area in the image to be compared (The default value is an empty rectangle which means the whole area of the image will be compared)
+   * @return Whether the similarity of the two images reaches the given threshold
    */
-  bool CheckImage( const std::string fileName, const Dali::Rect<uint16_t>& areaToCompare = Dali::Rect<uint16_t>(0u, 0u, 0u, 0u) );
+  bool CheckImage( const std::string fileName, const float similarityThreshold = DEFAULT_IMAGE_SIMILARITY_THRESHOLD, const Dali::Rect<uint16_t>& areaToCompare = Dali::Rect<uint16_t>(0u, 0u, 0u, 0u) );
 
 private:
 
@@ -111,20 +116,11 @@ private:
    * @brief Compare the given area in the two image files.
    * @param[in] fileName1 The first image file
    * @param[in] fileName2 The second image file
+   * @param[in] similarityThreshold The threshold for similarity comparison
    * @param[in] areaToCompare The area to be compared
-   * @return Whether the given area in the images of the two image files are identical
+   * @return Whether the similarity of the given area in the two images reaches the given threshold
    */
-  bool CompareImageFile( const std::string fileName1, const std::string fileName2, const Dali::Rect<uint16_t>& areaToCompare );
-
-  /**
-   * @brief Compare the image file with the given image buffer.
-   * @param[in] fileName The image file
-   * @param[in] imageBuffer The image buffer
-   * @param[in] imageWidth The width of the image
-   * @param[in] imageHeight The height of the image
-   * @return Whether the image buffer and the image in the image file are identical
-   */
-  bool CompareImageFile( const std::string fileName, std::vector< unsigned char > imageBuffer, unsigned int imageWidth, unsigned int imageHeight );
+  bool CompareImageFile( const std::string fileName1, const std::string fileName2, const float similarityThreshold, const Dali::Rect<uint16_t>& areaToCompare );
 
 private:
 

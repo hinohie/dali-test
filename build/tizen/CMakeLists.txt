@@ -23,7 +23,8 @@ SET(TEST_IMAGE_DIR \\"${IMAGES_DIR}\\")
 
 SET(PKG_LIST dali-core
              dali-adaptor
-             dali-toolkit)
+             dali-toolkit
+             opencv)
 
 INCLUDE(FindPkgConfig)
 pkg_check_modules(REQUIRED_PKGS REQUIRED ${PKG_LIST})

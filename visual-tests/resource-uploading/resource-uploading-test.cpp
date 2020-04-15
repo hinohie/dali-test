@@ -192,14 +192,14 @@ private:
   {
     if ( gTestStep == ADAPTOR_RESUME )
     {
-      DALI_ASSERT_ALWAYS( CheckImage( SECOND_IMAGE_FILE ) );
+      DALI_ASSERT_ALWAYS( CheckImage( SECOND_IMAGE_FILE ) ); // should be identical
 
       // The last check has been done, so we can quit the test
       mApplication.Quit();
     }
     else
     {
-      DALI_ASSERT_ALWAYS( CheckImage( FIRST_IMAGE_FILE ) );
+      DALI_ASSERT_ALWAYS( CheckImage( FIRST_IMAGE_FILE ) ); // should be identical
     }
   }
 
