@@ -121,3 +121,6 @@ then
   echo -e "\t</tests>" >> $xmlOutputFile
   echo -e "</visual_tests>" >> $xmlOutputFile
 fi
+
+# If we have failures, this will exit this script with 1 otherwise it'll be 0 (success)
+[[ $num_fails -eq 0 ]]
