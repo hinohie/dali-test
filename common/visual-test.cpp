@@ -43,7 +43,7 @@ void VisualTest::SetupNativeImage( Dali::Window window, Dali::CameraActor custom
     mNativeImageSourcePtr = NativeImageSource::New( window.GetSize().GetWidth(), window.GetSize().GetHeight(), NativeImageSource::COLOR_DEPTH_DEFAULT );
     mNativeTexture = Texture::New( *mNativeImageSourcePtr );
 
-    mFrameBuffer = FrameBuffer::New( mNativeTexture.GetWidth(), mNativeTexture.GetHeight(), FrameBuffer::Attachment::NONE );
+    mFrameBuffer = FrameBuffer::New( mNativeTexture.GetWidth(), mNativeTexture.GetHeight(), FrameBuffer::Attachment::STENCIL );
     mFrameBuffer.AttachColorTexture( mNativeTexture );
 
     RenderTaskList taskList = window.GetRenderTaskList();
