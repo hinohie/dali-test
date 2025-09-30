@@ -18,7 +18,9 @@
 // INTERNAL INCLUDES
 #include "visual-test.h"
 #include "image-util.h"
+#include <dali/devel-api/adaptor-framework/bitmap-saver.h>
 #include <dali/integration-api/debug.h>
+#include <dali/integration-api/pixel-data-integ.h>
 
 // EXTERNAL INCLUDES
 #include <Magick++.h>
@@ -78,7 +80,7 @@ VisualTest::VisualTest()
 {
 }
 
-void VisualTest::SetupNativeImage(Dali::Window window, Dali::CameraActor customCamera)
+void VisualTest::SetupOffscreenRenderTask(Dali::Window window, Dali::CameraActor customCamera)
 {
   window.ResizeSignal().Connect(this, &VisualTest::OnWindowResized);
 
@@ -87,11 +89,10 @@ void VisualTest::SetupNativeImage(Dali::Window window, Dali::CameraActor customC
     Layer rootLayer = window.GetRootLayer();
     mWindow         = rootLayer;
 
-    mNativeImageSourcePtr = NativeImageSource::New(window.GetSize().GetWidth(), window.GetSize().GetHeight(), NativeImageSource::COLOR_DEPTH_DEFAULT);
-    mNativeTexture        = Texture::New(*mNativeImageSourcePtr);
+    mTexture = Texture::New(TextureType::TEXTURE_2D, Pixel::RGBA8888, window.GetSize().GetWidth(), window.GetSize().GetHeight());
 
-    mFrameBuffer = FrameBuffer::New(mNativeTexture.GetWidth(), mNativeTexture.GetHeight(), FrameBuffer::Attachment::STENCIL);
-    mFrameBuffer.AttachColorTexture(mNativeTexture);
+    mFrameBuffer = FrameBuffer::New(mTexture.GetWidth(), mTexture.GetHeight(), FrameBuffer::Attachment::DEPTH_STENCIL);
+    mFrameBuffer.AttachColorTexture(mTexture);
 
     RenderTaskList taskList = window.GetRenderTaskList();
     if(mOffscreenRenderTask)
@@ -121,6 +122,8 @@ void VisualTest::SetupNativeImage(Dali::Window window, Dali::CameraActor customC
   }
 
   mOffscreenRenderTask.SetRefreshRate(RenderTask::REFRESH_ONCE);
+  mOffscreenRenderTask.KeepRenderResult();
+  mOffscreenRenderTask.FinishedSignal().Connect(this, &VisualTest::OnOffscreenRenderFinished);
 }
 
 void VisualTest::OnWindowResized(Dali::Window window, Dali::Window::WindowSize size)
@@ -132,6 +135,7 @@ void VisualTest::OnWindowResized(Dali::Window window, Dali::Window::WindowSize s
   if(mOffscreenRenderTask)
   {
     taskList.RemoveTask(mOffscreenRenderTask);
+    mOffscreenRenderTask.ClearRenderResult();
     mOffscreenRenderTask.Reset();
   }
 }
@@ -197,8 +201,7 @@ void VisualTest::CaptureWindow(Dali::Window window, Dali::CameraActor customCame
   }
   else
   {
-    SetupNativeImage(window, customCamera);
-    mOffscreenRenderTask.FinishedSignal().Connect(this, &VisualTest::OnOffscreenRenderFinished);
+    SetupOffscreenRenderTask(window, customCamera);
   }
 }
 
@@ -230,13 +233,19 @@ void VisualTest::OnOffscreenRenderFinished(RenderTask& task)
     }
     else
     {
-      success = mNativeImageSourcePtr->EncodeToFile(imageName);
+      Dali::PixelData pixelData = task.GetRenderResult();
+      if(pixelData)
+      {
+        auto pixelDataBuffer = Dali::Integration::GetPixelDataBuffer(pixelData);
+        success = Dali::EncodeToFile(pixelDataBuffer.buffer, imageName, pixelData.GetPixelFormat(), pixelData.GetWidth(), pixelData.GetHeight());
+      }
     }
   }
 
   if(!gFB)
   {
     task.SetRefreshRate(RenderTask::REFRESH_ALWAYS);
+    task.ClearRenderResult();
     task.FinishedSignal().Disconnect(this, &VisualTest::OnOffscreenRenderFinished);
   }
   PostRender(imageName, success);
