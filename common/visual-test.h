@@ -137,11 +137,11 @@ private:
   virtual void PostRender(std::string outputFile, bool writeSuccess) = 0;
 
   /**
-   * @brief Set up the native image for offscreen rendering.
+   * @brief Set up the offscreen render task for offscreen rendering.
    * @param[in] window The window to be rendered
    * @param[in] customCamera The custom camera to be used to render the offscreen frame buffer
    */
-  void SetupNativeImage(Dali::Window window, Dali::CameraActor customCamera);
+  void SetupOffscreenRenderTask(Dali::Window window, Dali::CameraActor customCamera);
 
   /**
    * @brief Callback function when a RenderTask has finished
@@ -162,9 +162,8 @@ private:
   void OnAnimationFinished4(Dali::Animation& /* not used */);
 
 private:
-  Dali::NativeImageSourcePtr mNativeImageSourcePtr; ///< The pointer of the native image source
-  Dali::Texture              mNativeTexture;        ///< The texture for the native image
-  Dali::FrameBuffer          mFrameBuffer;          ///< The frame buffer for offscreen rendering
+  Dali::Texture     mTexture;     ///< The texture for the offscreen rendering
+  Dali::FrameBuffer mFrameBuffer; ///< The frame buffer for offscreen rendering
 
   Dali::RenderTask              mOffscreenRenderTask; ///< The offscreen render task
   Dali::CameraActor             mCameraActor;         ///< The camera actor for the offscreen render task
